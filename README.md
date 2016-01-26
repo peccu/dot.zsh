@@ -1,0 +1,2 @@
+# dot.zsh
+zsh configurations
