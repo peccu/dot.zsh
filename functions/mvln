@@ -1,0 +1,16 @@
+#!/bin/zsh
+# -*- shell-script -*-
+function mvln(){
+    if [ $# -lt 2 ] ;then
+        echo USAGE : mvln \[file\] \[dir\]
+        echo
+        echo         This runs below commands.
+        echo           mv file dir
+        echo           ln -s dir/file .
+    else
+        echo mv $1 $2
+        mv $1 $2
+        echo ln -s $2/$1 .
+        ln -s $2/$1 .
+    fi
+}
