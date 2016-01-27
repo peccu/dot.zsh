@@ -1,7 +1,7 @@
 # ~/.zsh/init内のファイルを読み込む
-# ~/.zsh/completions内の補完用スクリプトも読み込む
+#~/.zsh/functions内の関数定義用スクリプトも読み込む
 # http://d.hatena.ne.jp/dgdg/20071127/1196179056
-ZSHHOMES=("${HOME}/.zsh/init" "${HOME}/.zsh/completions")
+ZSHHOMES=("${HOME}/.zsh/init" "${HOME}/.zsh/functions")
 for ZSHHOME in $ZSHHOMES
 do
     if [ -d $ZSHHOME -a -r $ZSHHOME -a -x $ZSHHOME ]; then
