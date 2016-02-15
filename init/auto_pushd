@@ -1,0 +1,5 @@
+# -*- shell-script -*-
+# 自動的にpushdを実行するようになる。cd -[TAB]で移動履歴が出る。
+setopt auto_pushd
+# ディレクトリスタックに重複する物は古い方を削除
+setopt pushd_ignore_dups
