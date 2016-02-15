@@ -1,0 +1,5 @@
+# -*- shell-script -*-
+# load alias
+if [ -f ~/.alias ]; then
+    . ~/.alias
+fi
