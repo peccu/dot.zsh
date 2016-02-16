@@ -1,0 +1,13 @@
+# -*- shell-script -*-
+# Summary
+#   gr is git-run npm module for management multiple git repositories
+# Url
+#   https://github.com/mixu/gr
+# Install
+#   npm i -g git-run
+# Usage
+#   gr +@work path/to/repo path/to/some/repo
+#   gr @work status
+
+# completion
+which gr >/dev/null && . <(gr completion)
