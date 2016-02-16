@@ -1,0 +1,2 @@
+# -*- shell-script -*-
+source ~/.autojump/etc/profile.d/autojump.zsh
