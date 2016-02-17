@@ -1,2 +1,18 @@
 # -*- shell-script -*-
-source ~/.autojump/etc/profile.d/autojump.zsh
+# [[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && source ~/.autojump/etc/profile.d/autojump.sh
+# fpath=(~/.autojump/functions $fpath)
+# autoload -U compinit && compinit
+[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
+# fpath=(/usr/local/share/zsh/site-functions $fpath)
+autoload -U compinit && compinit
+
+
+# Add the following line to your ~/.bash_profile or ~/.zshrc file (and remember
+# to source the file to update your current session):
+
+
+# If you use the Fish shell then add the following line to your ~/.config/fish/config.fish:
+#   [ -f /usr/local/share/autojump/autojump.fish ]; and . /usr/local/share/autojump/autojump.fish
+
+# zsh completion has been installed to:
+#   /usr/local/share/zsh/site-functions
