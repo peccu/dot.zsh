@@ -1,0 +1,13 @@
+# -*- shell-script -*-
+function unrar_to_directory(){
+    file=$1
+    directory=${file%.*}
+    if [ ! -e $directory ]
+    then
+        mkdir -p $directory
+    else
+        directory=$directory$(date "+%Y%m%d%H%M%S")$RANDOM
+        mkdir -p $directory
+    fi
+    unrar x $file $directory
+}
