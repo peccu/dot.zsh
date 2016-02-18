@@ -1,0 +1,22 @@
+# -*- shell-script -*-
+# http://www.foxking.org/oldsite/?20070618S2
+# 補完時に大小文字を区別しない
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+# 補完時に選択している要素を強調表示する
+zstyle ':completion:*' menu select=1
+
+# 履歴の補完をanythingで
+# source ~/.zsh/anything-history
+
+# 自作の補完を追加する
+# compinitより前に書くこと
+# fpath=(~/.zsh/completions ${fpath})
+# autoload $^fpath/*(N:t)
+
+# zsh-completion
+fpath=(~/.zsh/src/zsh-completions/src $fpath)
+fpath=(/usr/local/share/zsh-completions/ $fpath)
+
+# from 漢のzsh
+# 補完
+autoload -U compinit && compinit -u
