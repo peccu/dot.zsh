@@ -1,0 +1,28 @@
+# http://d.hatena.ne.jp/tarao/20100223/1266958660
+# add below 2 lines to .screenrc
+# # automatically set title
+# setenv SCREENTITLE auto
+
+# set window title of screen
+function set_screen_title () { echo -ne "\ek$1\e\\" }
+function { # use current directory as a title
+    function precmd_screen_window_title () {
+        if [[ "$SCREENTITLE" = 'auto' ]]; then
+            set_screen_title "$(hostname)"
+        fi
+    }
+}
+function title() {
+    if [[ -n "$SCREENTITLE" ]]; then
+        if [[ -n "$1" ]]; then
+            # set title explicitly
+            export SCREENTITLE=explicit
+            set_screen_title "$1"
+        else
+            # automatically set title
+            export SCREENTITLE=auto
+        fi
+    fi
+}
+
+precmd_functions+=precmd_screen_window_title
