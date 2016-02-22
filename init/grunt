@@ -1,0 +1,2 @@
+# -*- shell-script -*-
+which grunt >/dev/null && eval "$(grunt --completion=zsh)"
