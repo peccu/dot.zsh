@@ -1,0 +1,9 @@
+#!/bin/zsh
+# http://d.hatena.ne.jp/hitode909/20110219/1298088499
+function h() {
+    cd ~/$1
+#     cd
+#     if [ $# = 1 ]; then
+#         cd $1
+#     fi
+}
