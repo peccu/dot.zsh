@@ -1,0 +1,6 @@
+# http://d.hatena.ne.jp/hitode909/20100223/1266821271
+_s(){
+    sessions=$(screen -ls | awk '{ FS = "[\. \t]+" } /tached/ { print $3 }')
+    _arguments "1:first:($sessions)"
+}
+compdef _s s
