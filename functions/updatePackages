@@ -1,0 +1,184 @@
+#!/bin/zsh
+autoload -Uz colors
+colors
+script=$0
+function sudo_notify(){
+    terminal-notifier -group Sudo -title 'sudo' -message 'maybe password asking' -activate com.apple.Terminal>/dev/null 2>&1
+    /usr/bin/sudo $*
+}
+
+function updateSSLCA(){
+    if [ -e ~/.DigiCertHighAssuranceEVRootCA.crt ]
+    then
+        wget https://www.digicert.com/testroot/DigiCertHighAssuranceEVRootCA.crt -O ~/.DigiCertHighAssuranceEVRootCA.crt
+    fi
+}
+
+function updateRbenv(){
+    if [ -d ${HOME}/.rbenv  ] ; then
+        cd ${HOME}/.rbenv
+        git pull
+    fi
+
+}
+
+function updateGem(){
+    if ! `which gem>/dev/null`;then return; fi
+    gem update --system
+    gem update
+    if ! `sudo_notify gem 2>/dev/null`;then return; fi
+    sudo_notify gem update --system
+    sudo_notify gem update
+    if [ -d ${HOME}/.rbenv  ] ; then
+        rbenv rehash
+    fi
+}
+
+function updateCpanm(){
+    if ! `which cpanm>/dev/null`;then return; fi
+    if [ $(hostname) = "luffy" ]
+    then
+        SUDO=""
+    else
+        SUDO="sudo_notify"
+    fi
+    $SUDO cpanm --self-upgrade
+    # need App::cpanoutdated
+    # cpanm App::cpanoutdated
+    $SUDO cpan-outdated | $SUDO cpanm
+}
+
+function updatePip(){
+    if ! `which pip>/dev/null`;then return; fi
+    TMPFILE=/tmp/.pip-freeze
+    sudo_notify pip freeze |awk -F'==' '{print $1}'>$TMPFILE
+    sudo_notify pip install -r $TMPFILE -U
+    rm $TMPFILE
+}
+
+function updatePod(){
+    if ! `which pod>/dev/null`;then return; fi
+    pod setup
+}
+
+function updatePort(){
+    if ! `which port>/dev/null`;then return; fi
+    sudo_notify sh -c 'port selfupdate && port -u upgrade outdated'
+    if `which port >/dev/null`;then sudo_notify port -f clean --all installed; fi
+    if `which port >/dev/null`;then sudo_notify port -f uninstall inactive; fi
+    if `which port >/dev/null`;then port installed|grep -v "(active)"; fi
+}
+
+function updatedb(){
+    if [ -x /usr/bin/updatedb ]
+    then
+	sudo_notify /usr/bin/updatedb
+    elif [ -x /etc/cron.daoly/locate ]
+    then
+	sudo_notify /etc/cron.daoly/locate
+    elif [ -x /etc/cron.daoly/mlocate ]
+    then
+	sudo_notify /etc/cron.daoly/mlocate
+    elif [ -x /usr/libexec/locate.updatedb ]
+    then
+	sudo_notify /usr/libexec/locate.updatedb /var/db/locate.database false
+    fi
+}
+function updateHome.files(){
+    if [ -f ~/.emacs.d/home.filelist ]
+    then
+        ~/bin/update.home.filelist
+    fi
+}
+
+function updateGit(){
+    gitRepos=($(ack '/.git$' ~/.emacs.d/home.filelist))
+    for i in $gitRepos
+    do
+        echo ---- ${i%/*} ----
+        pushd ${i%/*}
+        if [ $(git remote show|wc -l|awk '{print $1}') -eq 0 ]
+        then
+            echo no remote repository
+        else
+            if [ $(git branch|ack '^\*'|awk '{print $2}') != "master" ]
+            then
+                echo not in master branch. is it OK?
+            else
+                git pull
+            fi
+        fi
+        if [ -f .gitmodules ]
+        then
+            git submodule update --init
+            git submodule update
+        fi
+        popd
+    done
+}
+
+function updateEmerge(){
+    if which emerge|ack 'Gentoo' >/dev/null
+    then
+        SUDO=""
+    else
+        SUDO="sudo_notify"
+    fi
+    if ! `which emerge>/dev/null`;then return; fi
+    # emerge --sync
+    # layman -S && layman -s ALL
+    $SUDO eix-sync
+    $SUDO emerge --with-bdeps=y -uaDNvtj world
+    if `which emerge >/dev/null`;then $SUDO emerge -av --depclean; fi
+    if [ -d ~/Gentoo/var/tmp/portage/ ];then rm -rf ~/Gentoo/var/tmp/portage/*; fi
+    if [ -d /var/tmp/portage/ ];then $SUDO rm -rf /var/tmp/portage/*; fi
+}
+
+function updateQuicklisp(){
+    if which ccl >/dev/null;then
+        ccl --eval "(progn (ql:update-client)(ql:update-all-dists)(ccl:quit))"
+    else
+        if which sbcl >/dev/null;then
+            sbcl --eval "(progn (ql:update-client)(ql:update-all-dists)(quit))"
+        fi
+    fi
+}
+
+function updateYum(){
+    if ! `which yum>/dev/null`;then return; fi
+    sudo_notify yum update
+    sudo_notify yum clean all
+}
+
+function updateApt(){
+    if ! `which apt-get>/dev/null`;then return; fi
+    sudo_notify apt-get update
+    sudo_notify apt-get upgrade
+    sudo_notify apt-get clean
+    sudo_notify apt-get autoclean
+}
+
+function cleaning(){
+    # ports cleaning
+    if `which port >/dev/null`;then sudo_notify port -f clean --all installed; fi
+    if `which port >/dev/null`;then sudo_notify port -f uninstall inactive; fi
+    if `which port >/dev/null`;then port installed|grep -v "(active)"; fi
+    # portage cleaning
+    if `which emerge >/dev/null`;then emerge -av --depclean; fi
+    if [ -d ~/Gentoo/var/tmp/portage/ ];then rm -rf ~/Gentoo/var/tmp/portage/*; fi
+    if [ -d /var/tmp/portage/ ];then sudo_notify rm -rf /var/tmp/portage/*; fi
+    # yum creaning
+    if  `which yum >/dev/null` ;then sudo_notify yum clean all; fi
+    # apt cleaning
+    if  `which apt-get >/dev/null` ;then sudo_notify apt-get clean; fi
+    if  `which apt-get >/dev/null` ;then sudo_notify apt-get autoclean; fi
+}
+
+function _updatePackages(){
+    for i in $(cat $script|ack 'functio[n] update'|awk '{split($2,a,"(");print a[1]}')
+    do
+        echo "==== ${fg[green]}$i$reset_color ===="
+        $i
+    done
+}
+alias updatePackages=_updatePackages
