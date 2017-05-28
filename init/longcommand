@@ -1,0 +1,51 @@
+# -*- shell-script -*-
+# 時間のかかるコマンドが終わったら通知
+# http://d.hatena.ne.jp/f99aq/20080101/1199196416
+# http://blog.tobez.org/posts/how_to_time_command_execution_in_zsh/
+note_remind=0
+note_ignore="yes"
+note_command="?"
+note_time_seconds=4
+
+note_report()
+{
+    echo ""
+    echo "note_report: $note_command completed in $1 seconds"
+    if [ -x "$(which terminal-notifier)" ]
+    then
+        terminal-notifier -group "long command" -message "long command($note_command) finished" >/dev/null
+    fi
+}
+
+note_set_time(){
+    note_time_seconds=$1
+}
+
+note_preexec()
+{
+    if [ "x$TTY" != "x" ]; then
+        note_remind="$SECONDS"
+        note_ignore=""
+        note_command="$2"
+    fi
+}
+
+note_precmd()
+{
+    local xx
+    if [ "x$TTY" != "x" ]; then
+        if [ "x$note_ignore" = "x" ]; then
+            note_ignore="yes"
+            xx=$(($SECONDS-$note_remind))
+            if [ $xx -gt $note_time_seconds ]; then
+                if [ $TTYIDLE -gt $note_time_seconds ]; then
+                    note_report $xx
+                fi
+            fi
+        fi
+    fi
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook preexec note_preexec
+add-zsh-hook precmd  note_precmd
