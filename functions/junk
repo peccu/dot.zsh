@@ -1,0 +1,23 @@
+#!/bin/sh
+junklist(){
+    # junkディレクトリ内のファイルを探す
+    find ~/.junk|egrep "[^~]$"|grep $1
+}
+
+junk(){
+    JUNKS=($(junklist $1))
+    if [ ${#JUNKS} -gt 1 ]
+    then
+        # 候補が2つ以上あったら候補の表示
+        junklist $1
+    else
+        # 候補が1つなら実行権限を付加して実行
+        if [ ! -x $JUNKS ]
+        then
+            echo chmod +x $JUNKS >>/dev/stderr
+            chmod +x $JUNKS
+        fi
+        shift
+        $JUNKS $*
+    fi
+}
