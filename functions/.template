@@ -1,0 +1,17 @@
+#!/bin/zsh
+# -*- shell-script -*-
+function usage(){
+    echo Usage: $0
+}
+
+function main(){
+}
+
+# call main function
+# parse/prepare arguments
+if [ $# -lt 1 ]
+then
+    usage
+else
+    main $*
+fi
