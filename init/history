@@ -1,0 +1,25 @@
+# -*- shell-script -*-
+# # 履歴ファイルを上書きではなく追加する。
+# # 複数のホストで同時にログインすることがあるので、上書きすると危険だ。
+# shopt -s histappend
+# # "!"をつかって履歴上のコマンドを実行するとき、
+# # 実行するまえに必ず展開結果を確認できるようにする。
+# shopt -s histverify
+# # 履歴の置換に失敗したときやり直せるようにする。
+# shopt -s histreedit
+# # 端末の画面サイズを自動認識。
+# shopt -s checkwinsize
+
+# # 履歴をなんかする
+# setopt append_history
+# setopt extended_history
+
+# [2010-02-09 02:48:28]
+# ヒストリの保存場所
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000                 # メモリ内保存件数
+SAVEHIST=100000                 # ファイルに保存する件数
+setopt hist_ignore_all_dups     # ignore duplication command history list
+setopt share_history            # share command history data
+setopt extended_history         # extended history format 時刻を記録
+function history-all { history -E 1 } # 全履歴の一覧を出力する
