@@ -1,0 +1,7 @@
+# -*- shell-script -*-
+# cf.http://d.hatena.ne.jp/hagure_beans/20101211/1292081391
+# キャッシュの設定
+if [ -d ~/.zsh/cache ]; then
+    zstyle ':completion:*' use-cache yes
+    zstyle ':completion:*' cache-path ~/.zsh/cache
+fi
